@@ -33,9 +33,36 @@
 \label{Related Work}
 
 \section{Summary}
+\label{Summary}
+Marthi touches on a myriad of topics as he discusses the research conducted in his thesis. Starting with background on ``Flat" reinforcement learning, Marthi explains the foundations of the Semi-Markov Decision Process (SMDP), partial programs, and multieffector MDPs upon which the research is built.
+
+The first major contribution of the dissertation, the Concurrent ALisp language, is then explained. A description of the implementation follows. How learning algorithms are applied in Concurrent ALips then follows. These learning algorithms use the early foundations to describe how the learning using Concurrent ALisp is executed.
+
+The experimental results then backup the principles of learning using Concurrent ALisp. The primary themes of partial programs, reward decomposition, and scalability are all tested.
 
 \subsection{Background}
 \label{Background}
+
+\subsubsection{MDPs and SMDPs}
+The research done by Marthi, along with much for the reinforcement learning field, builds upon Markov decision processes or MDPs \cite{Puterman:1994}, \cite{bertsekas:1996}. MDPs are often used to model sequential decision making processes. An MDP can be defined as a tuple $M = (S, A, P, R, s_0)$. Each value of the tuple is defined as follows. 
+\begin{itemize}
+	\item $S$ - state space
+	\item $A$ - action space
+	\item $P$ - transition distribution
+	\item $R$ - reward function. A function that maps a state, action, and next state $R(s,a,s')$ to a member in $\mathbb{R} \cup -\infty$
+	\item $s_0$ - initial start state
+\end{itemize}
+
+For an MDP to be an accurate representation of the problem, two general properties have to be met or assumed. First, the current state must be derivable just from the last perception of the environment but the agent. Second, the Markov property is assumed. The Markov property states that the probability of entering a given state next only relies on the current state and the action taken from that state. No prior history before that state is taken into account. 
+
+Markov decision processes can be solved or estimated with a multitude of different algorithms and approaches. The solution to an MDP is known as a \textit{policy}, denoted by $\pi$. A policy describes what actions an agent should take when in a given state. Two types of policies to focus on are stationary and non-stationary policies. 
+
+A stationary policy is one in which it depends only on the last state, $\pi(s)$. A non-stationary policy is one in which the action decision relies on additional information than just the current state. Marthi focuses on non-stationary policies as he notes that most hierarchical reinforcement learning breaks agent behavior into tasks. As a result, the goal of an agent might not be recoverable from just the environment state. 
+
+From MDPs, a modified version called a semi-Markov decision process (SMDP) can be described. An SMDP is an MDP that also includes a duration distribution for each state action pair. The reasoning behind adding a duration is that actions can take some amount of time to complete. From a hierarchical standpoint with tasks, one might imagine that a task takes a certain amount of time. The SMDP is build to incorporate that duration into the model. 
+
+\subsubsection{Partial Programs}
+
 
 \subsection{Concurrent ALisp}
 \label{CALisp}
