@@ -76,13 +76,31 @@ Partial programs also allow for decomposition of the Q-function for learning alg
 The motivation behind decomposing the Q-function is to simplify the learning process. Each part of the decomposition may only rely on a particular subset of variables that are part of the state. In these cases, state abstraction can be leveraged, and thus reduce the sample complexity of learning, since each value is learned independently. 
 
 
-\subsection{Concurrent ALisp}
+\subsection{Concurrent ALisp (CALisp)}
 \label{CALisp}
+In the case of multiple agents or a multieffector MDP, ALisp alone is no longer suitable for solving these problems. To attempt to make ALisp work with multiple agents, the partial program would then have to be written to account for multiple agents and require a much more complicated program with book keeping. This is due to the fact that the subroutine nature of ALisp is lost because each agent might be doing something different at every time step. Separate ALisp programs could be run instead to maintain the subroutine nature but in doing so it assumes there are no coordinated actions at a low-level. 
 
+Concurrent ALisp is designed to solve these problems. This is Marthi's first major contribution. To sidestep the flaws of a large ALisp program or separate ALisp programs, Concurrent ALisp takes a multithreading approach to solving the problem.
 
+The multithreading approach allows for the partial program to spawn new threads and specify a specific subroutine that is then executed in that thread. When the subroutine finishes, the thread dies. These threads will run independently from one another until a choice or action statement is reached. 
+
+When a thread reaches a choice statement, the thread pauses execution and waits for other threads to arrive at a choice or action statement. All threads that are at a choice statement then make a joint choice. This choice is based on the \textit{completion} that is provided to the partial program. 
+
+Threads also wait for each other at action statements. Once all threads are at an action statement, a joint action is taken. If some threads are at choice statements and others are at action statements, threads at the action statements wait, while threads at choice statements choose and continue until they are at an action statement.  
+
+Unlike separate programs, these joint choices allow for coordination between subroutines. The CALisp partial programs also retains is subroutine structure, while taking care of all the bookkeeping for threading. This allows for slight modifications to the program to be made in order to adapt to multiple agents, rather than a complex rewrite. A multithreaded structure also exposes a threadwise parallel structure in addition to temporal structure which is later taken advantage of in the learning algorithms. 
+
+Marthi goes on to define the formal structure of CALisp in his dissertation. The reader is referred to the thesis for exact details on the formalization of CALisp. The formalization describes how one might implement CALisp. 
+%However, there are three important outcomes from the formalization: the classification of a state, how joint choice states operate, and how joint action states operate.
+
+%A combined state $\omega$, can be one of three classes of state: a join choice state, a joint action state, or an internal state. A joint action state is a state where each of its threads with effectors (agents) has the status \textit{action}. Choice states are states that are not action states and no thread has the status of \textit{running}. Any state that is not an action or choice state is an \textit{internal state}. \textit{Action} and \textit{running} are statuses applied to threads. \textit{Action} means that a thread is at an action statement in the partial program, while \textit{running} means that the thread is currently running commands in the partial program but is not at a choice or action statement. 
+
+%In a joint choice states, each of the threads actual choice is set according to what the completion specifies. The thread is stepped, and the status is returned to running. In a join action state, each effector is assigned an action
 
 \subsection{Implementation of ALisp System}
 \label{Implementation}
+
+
 
 \subsection{Learning Algorithms}
 \label{Learning}
