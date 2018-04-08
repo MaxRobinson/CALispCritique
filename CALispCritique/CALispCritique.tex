@@ -101,13 +101,16 @@ Marthi goes on to define the formal structure of CALisp in his dissertation. The
 \label{Implementation}
 As his second major contribution, Marthi created an implementation of his CALisp language. The implementation of CALisp for this thesis was written in Lisp.  This section of the dissertation is similar to code documentation and language specifics. This includes things like specifying types, function calls, parameters for functions, objects, and required methods for these objects. As a result, readers are referred to the thesis for details of the exact implementation rather than including a summarization of the language particulars in this critique. 
 
-At a high level, the important part about the language implementation was the idea of extensibility. CALisp was implemented in an object-orient paradigm. 
+At a high level, the important part about the language implementation is the idea of extensibility. CALisp was implemented in an object-orient paradigm. Based on this paradigm, the implementation focused on defining objects that were necessary for any partial program to run, and objects that could be extended for additional functionality. Key examples of objects that were designed to be extensible are the Q-function, approximation architectures, and learning algorithm objects. These objects are described with a base implementation but also layout the functions needed and the behavior expected if one were to extend the object. 
 
-%talk about how object oriented style allows for others to implement Q-learning or other learning algorithms easily into the CALisp system. 
+Extensibility is important when implementing a language. Rarely is a user going to want only the pre-built functions of a language. This would mean that a user of the language would have little control over the behavior of objects native to the language and has little recourse in building their own objects to try and modify those behaviors. By allowing for users to extend objects, the user is given much more control over how a partial program in the language might behave. 
 
+An example of extending a CALisp object is the ability to create a new approximation architecture. The language implementation comes with a default linear approximator. If a user wanted to instead use a neural network, the user could extend the approximation architecture object and implement the required methods. This is a very important feature for CALisp in order to allow CALisp to be used by others and to extend the life of CALisp. 
 
 \subsection{Learning Algorithms}
 \label{Learning}
+
+
 
 \subsection{Experimental Results}
 \label{Experiments}
