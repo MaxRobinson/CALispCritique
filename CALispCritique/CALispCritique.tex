@@ -63,13 +63,14 @@ A stationary policy is one in which it depends only on the last state, $\pi(s)$.
 From MDPs, a modified version called a semi-Markov decision process (SMDP) can be described. An SMDP is an MDP that also includes a duration distribution for each state action pair. The reasoning behind adding a duration is that actions can take some amount of time to complete. From a hierarchical standpoint with tasks, one might imagine that a task takes a certain amount of time. The SMDP is build to incorporate that duration into the model. 
 
 \subsubsection{Partial Programs}
+\label{Partial Programs}
 A goal for Marthi's research is to allow programmers to easily incorporate background knowledge into learning algorithms. To do this Marthi introduces ALisp \cite{Andre:2002} and partial programming. Partial programs aim to help programmers incorporate background knowledge while writing a program to learn based on the partial program. 
 
 A partial program can thought of as constraints on which policies can be searched for while learning. A policy that finds an optimal policy given these constraints can be considered hierarchically optimal. ALisp is a language in which partial programs can be written. In ALisp, the foundations for Concurrent ALisp, the construct of a choice statements is added to allow for non-determinism in the program execution. This nondeterminism is used for selecting which set of statements to run next and what actions to take in the environment. The program then corresponds to a set of policies that can run the program and choose what to do at the choice statements. The choices made at each statement use a \textit{completion} of the program. 
 
 Partial programs when combined with an underlying MDP create an SMDP, called the induced SMDP. The states in the SMDP are derived from the state of the MDP and the \textit{machine state}. The machine state can be thought of as program specific information about the partial program during execution. Actions in the SMDP are the choices made at the choice statements. The actions taken in the program then might result in some action being taken in the underlying environment. The reward for the SMDP is the reward gained during all actions between two choice statements. 
 
-By creating an SMDP from the partial program, algorithms for SMDPs can be applied to the induced SMDP. Marthi concludes that finding the hierarchically optimal policy corresponding to the partial program is equivalent to finding the optimal stationary policy for the induced SMDP. This means that by looking at the SMDP, a hierarchically optimal execution of the partial policy can be found.  
+By creating an SMDP from the partial program, algorithms for SMDPs can be applied to the induced SMDP. Marthi concludes that finding the hierarchically optimal policy corresponding to the partial program is equivalent to finding the optimal stationary policy for the induced SMDP. This means that by looking at the SMDP, a hierarchically optimal execution of the partial program can be found. Since the partial program corresponds to constraints on policies for the MDP, finding a hierarchically optimal execution for the partial program means that a hierarchically optimal policy has been found for the MDP. 
 
 Partial programs also allow for decomposition of the Q-function for learning algorithms. The Q-function can be thought of as the "action-value function". The Q-function is the expected reward if we start at $\textbf{s}$, a history of states, and do action $a$, then follow $\pi$. For partial programs, the Q-function can be decomposed into three components, $Q_r$, $Q_c$, $Q_e$. These are the expected reward received while doing the current choice, after the current choice until the subroutine ends, and after the current subroutine respectively.  
 
@@ -107,9 +108,81 @@ Extensibility is important when implementing a language. Rarely is a user going 
 
 An example of extending a CALisp object is the ability to create a new approximation architecture. The language implementation comes with a default linear approximator. If a user wanted to instead use a neural network, the user could extend the approximation architecture object and implement the required methods. This is a very important feature for CALisp in order to allow CALisp to be used by others and to extend the life of CALisp. 
 
-\subsection{Learning Algorithms}
+\subsection{Learning Algorithms in CALisp}
 \label{Learning}
+Several algorithms have been developed to learn an optimal policy in a flat MDP. Two popular algorithms that are also leveraged by Marthi are Q-learning \cite{Watkins:1992} and SARSA \cite{Sutton:1998}. Both build on the idea of dynamic programming and temporal-difference methods to find a solution to the MDP. Temporal difference methods work by storing an estimation of the value function for the policy, $\hat{V}^{\pi}$. Then after an action is taken according to the policy, an update of the estimated value function is applied according to equation \ref{TD-learning}
 
+\begin{equation}
+\label{TD-learning}
+\hat{V}^{\pi}(s) \leftarrow \hat{V}^{\pi}(s) + \eta(r + \hat{V}^{\pi}(s') - \hat{V}^{\pi}(s))
+\end{equation}
+
+where $\eta$ is a learning rate and $r$ is the reward observed. 
+
+Q-learning uses a temporal difference method but to estimate the optimal Q-function given an observation of a state, action, reward, and new state. The update performed is 
+
+\begin{equation}
+\label{q-learning}
+\hat{Q}(s,a) \leftarrow \hat{Q}(s,a) + \eta(r + \max_{a'}\hat{Q}(s',a') - \hat{Q}(s,a))
+\end{equation}
+where $\eta$ is again a learning rate. A discount factor can be added to the equation to model the idea of future rewards being less valuable then current a reward. 
+
+SARSA is similar to Q-learning, but rather than updating the Q-function estimation based on the maximum value of $(s', a')$, the update is made according the estimated Q-function determined by the current policy, $\pi(s',a')$. This makes SARSA an on-policy algorithm while Q-learning is an off-policy algorithm. The SARSA update is described as 
+
+\begin{equation}
+\label{SARSA}
+\hat{Q}(s,a) \leftarrow \hat{Q}(s,a) + \eta(r + \hat{Q}(s', \pi(s',a')) - \hat{Q}(s,a))
+\end{equation}
+where $a'$ is chosen according to the policy. 
+
+These algorithms, while designed for MDPs can be modified for SMDPs by adding a discount term that scales according to the duration of the task. For Q-learning an updated equation \ref{q-learning} for SMDPs would be 
+
+\begin{equation}
+\label{q-SMDP}
+\hat{Q}(s,a) \leftarrow \hat{Q}(s,a) + \eta(r + \gamma^d \max_{a'}\hat{Q}(s',a') - \hat{Q}(s,a))
+\end{equation}
+where $d$ is the duration of the task. 
+
+The modifications of these algorithms for SMDPs are important because, as discussed earlier, the partial programs written in CALisp with an underlying MDP can produce an induced SMDP. Thus, a simple way to write a learning algorithm for CALisp programs is to use an existing algorithm on the induced SMDP from the partial program. 
+
+The SMDP Q-learning algorithm could thus be used in CALisp to learn the optimal stationary policy on the SMDP. As a reminder, the optimal stationary policy of the SMDP is equivalent to the hierarchically optimal completion of the partial program. This then corresponds to a hierarchically optimal solution for the MDP. As a result, a hierarchically optimal solution can be found to the MDP by finding the optimal stationary policy of the induced SMDP. 
+
+\subsubsection{Decomposed Learning}
+While applying a standard SMDP algorithm to CALisp works, Marthi points out that there is a better way. For the SMDP Q-learning, rewards are not decomposed in any way which means that should there be a positive and negative reward from different subroutines, all subroutines are penalized according to the combined rewards. In addition, the decomposition of the Q-function that is available as part of a partial program in ALisp is lost in CALisp because subroutines now run in separate threads.
+
+However, these problems are solved if a programmer can provide a way of decomposing the reward signal into per-thread rewards. This allows specific threads, and thus subroutines, to be associated with particular rewards. This then allows a threadwise decomposition of the Q-function across subroutine boundaries, like in ALisp. 
+
+In order to make a threadwise decomposition, the variability in the number of threads has to be taken into account. Since threads are spawned only from other threads, this can be boiled down to taking into account a threads future rewards as well as rewards form uncreated descendants of the that thread. This is done by calculating the Q-function for a given thread by taking into account the relevant descendants of a thread. The reward received from the relevant descendants of threat $t$ for a set of combined states (called a trajectory) $\vec{\omega}$ can be defined as a random variable $\chi ^t(\omega)$. The threadwise Q-function can then be defined as 
+
+\begin{equation}
+Q^{\psi}_t (\omega, u) \triangleq E[\chi^t(\vec{\omega})]
+\end{equation}  
+for a state $\omega$, and a choice $u$ based on a completion $\psi$. This means that the Q-component for $t$ is the expected total reward from $t$ and all descendants of $t$. 
+
+This then allows the combined Q-function for a CALisp program is proven by Marthi to be the sum of the threadwise Q-components in the current state. This is described as 
+
+\begin{equation}
+Q^{\psi} (\omega, u) = \sum_{t \in T(\omega)} Q^{\psi}_t (\omega, u) 
+\end{equation}  
+
+As a result, Marthi claims, an algorithm that learns the $Q_t$ corresponding to an optimal completion for all threads that could be seen during execution, the optimal completion can be recovered from the learned $Q_t$'s. This means that learning algorithms can target learning more specific Q-functions for subroutines possibly reduce the complexity of learning without losing the ability to learn the optimal completion. 
+
+A temporal decomposition can then be defined per thread decomposition, similar to the ALisp partial program decomposition of the Q-function discussed in \ref{Partial Programs}. The biggest difference is that the temporal decomposition of the Q-function relies heavily on the implementation of CALisp since use of the machine state is used to determine which parts of the reward should be incorporated into which of the temporal Q-components. 
+
+The decomposition results in temporal Q-components per thread of $Q_{t,r}$, $Q_{t,c}$, $Q_{t,e}$. $Q_{t,r}$ is the reward gained doing a particular action, or rewards all rewards gained until a choice block. $Q_{t,c}$ is subsequent rewards in the current choice block. $Q_{t,e}$ is the rewards outside the choice block.
+
+These temporal Q-Components are then shown to equal the total threadwise Q-component by 
+
+\begin{equation}
+Q^{\psi}_t (\omega, u) =  Q^{\psi}_{t,r} (\omega, u) + Q^{\psi}_{t,c} (\omega, u) + Q^{\psi}_{t,e} (\omega, u)
+\end{equation}  
+This then allows a learning algorithm to focus even more narrowly on learning just the temporal decomposition of the threadwise Q-function, while still corresponding to an optimal completion of the partial program. 
+
+
+\subsubsection{SARSA Implementation}
+Marthi provides and implements two SARSA variants, one with threadwise decomposition and the other with temporal decomposition. Threadwise decomposition of SARSA is proved to converge to the optimal global Q-function, based on work done by Russell and Zimdars \cite{Russell:2003}, and Singh et al. \cite{Singh}. Russell showed threadwise updates are equivalent to standard SARSA updates. Singh wrote the SARSA convergence theorem. 
+
+A conjecture is made that the temporally decomposed SARSA will converge the a optimal global Q-function. However no proof is provided. Even for ALisp, though, the temporal decomposition of SARSA has not been proved to converge. 
 
 
 \subsection{Experimental Results}
