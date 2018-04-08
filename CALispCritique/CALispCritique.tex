@@ -187,6 +187,41 @@ A conjecture is made that the temporally decomposed SARSA will converge the a op
 
 \subsection{Experimental Results}
 \label{Experiments}
+Three sets of experiments were run using CALisp, each with a different focus. The first focuses on the effect of incorporating prior knowledge through a partial program on learning. The second focuses on the performance between threadwise decomposition, temporal decomposition, and undecomposed algorithms. The third measures the scalability of algorithms. 
+
+\subsubsection{Prior Knowledge experiment}
+To test the role of prior knowledge in the form of a partial program, five different partial programs are compared, labeled 1-5. Each algorithm adds slightly more prior knowledge than the last and the fifth uses incorrect prior knowledge. 
+\begin{enumerate}
+\item equivalent to flat reinforcement learning.
+\item specifies task hierarchies with no order.
+\item adds some task ordering information
+\item includes ordering information along with coordination information.
+\item includes ``faulty prior knowledge"
+\end{enumerate}
+
+The environment for the test is a 3x2 grid world, where two peasants try to gather two of each type of resource. The resources are gold and wood. Despite the small world, it has over 4500 states and 49 actions per state. 
+
+The learning algorithm used is a tabular representation of Q-Learning. The tabular representation was used to avoid any possible benefit to learning outside of the partial program, such as a good function approximator or reward shaping. This is the reason why a small example is chosen for the tabular representation. Even though it is a small example, the Q-function tables still has over 2 x $10^5$ entries. 
+
+The results of the experiment show that with increasing prior knowledge in the partial program, the rate of convergence to an optimal policy also increased. Partial program number 4 converged the quickest, while partial program number 1 took the longest. Partial program 5 learned quickly, but ultimately converged to a suboptimal policy because of the incorrect prior knowledge.
+
+\subsubsection{Decomposed learning experiments}
+Three learning algorithms are tested to explore the role of decomposed learning. The algorithms compared are an undecomposed, threadwise decomposed, and temporally decomposed Q-learning algorithms. For each algorithm, linear approximation and reward shaping were used to make learning more tractable. Boltzman exploration was used for the exploration policy for all algorithms. 
+
+Again, the environment is a resource gathering problem. In this case, the world is a 20x20 grid with 6 peasants. The goal was to gather 10 gold and 15 wood.
+
+The results demonstrate that temporal decomposition converged to the optimal policy the fastest, very closely followed by threadwise decomposition. The difference between the two is difficult to see in the resulting graph provided, but the authors analysis seems believable. An explanation for the similar performance is based on the task tested having a relatively shallow task hierarchy. It is suggested that temporal decomposition might perform noticeably better than threadwise decomposition in these deeper hierarchy. However, no experimental results are provided on this front. 
+
+\subsubsection{Scalability experiment}
+Two experiments are conducted to test scalability: varying the number of peasants to collect resources, and varying the size of the world. Again, the goal is for peasants to collect resources in the environment. The algorithm used in the experiment is the temporally decomposed learning algorithm from the previous experiment.
+
+Varying the number of peasants in a 15x15 grid world showed two stages of performance. For a small number of peasant learning took fewer steps but grew fairly quickly as the number of peasants increased to about 10 peasants. After 10 peasants the number of steps it takes to learn remains relatively similar for the rest of the number of peasants up to 40, which was the max tested. The rate of growth in learning time (in steps), after 10, looks roughly linear with the number of peasants. 
+
+The reasoning given for the two different rates or learning is due to the task. Collisions provide a large negative reward, so for few peasants the learner might just need to learn to avoid collisions. As the number of peasants increase though, the learner might have to learn not to send multiple peasants to the same resource. 
+
+In varying the map size, grids with side length of about 2, 5, 10, 20, 40, 60, and 100 were used with 5 peasants. The results show that as the map grows the number of steps needed until optimality increases in a roughly learn fashion with the size of the grid side length.
+
+Reasoning as to this linear growth is based in the time it takes to get updates at the higher level of choices. Each choice probably takes longer because the grid is getting larger. This then creates fewer high-level updates to the Q-function, thus needing more steps to learn an optimal policy.
 
 \section{Contributions}
 \label{Contribs}
