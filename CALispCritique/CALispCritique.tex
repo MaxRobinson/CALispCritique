@@ -2,13 +2,13 @@
 \usepackage{jair, theapa, rawfonts, amssymb}
 
 %\jairheading{1}{2018}{}{}{}
-%\ShortHeadings{A Summary of Pairwise Saturations in ILP}
-%{Robinson}
+\ShortHeadings{A Critique of Marthi's Dissertation}
+{Robinson}
 \firstpageno{1}
 
 \begin{document}
 
-\title{A Critique of the dissertation ``Concurrent Hierarchical Reinforcement Learning"}
+\title{A Critique of the Dissertation by Marthi ``Concurrent Hierarchical Reinforcement Learning"}
 
 
 \author{\name Max Robinson \email max.robinson@jhu.edu \\
@@ -21,12 +21,19 @@
 
 \maketitle
 
-%\begin{abstract}
-%\end{abstract}
+\begin{abstract}
+Marthi in his dissertation ``Concurrent Hierarchical Reinforcement Learning" claims three major contributions: The specification of CALisp, an implementation of CALisp, and developing particular learning methods for CALisp that perform well. In this critique, a summary of these claims and the background knowledge to understand them is explored. An investigation of the validity of these claims is then conducted. It is found that Marthi's claims of contribution are well founded, and in addition Marthi lays more ground work and theory for additional mulieffector hierarchical reinforcement learning research.
+\end{abstract}
 
 \section{Introduction}
 \label{Introduction}
-\cite{Marthi:2006}
+Reinforcement learning can be described simply as the learning process of an agent or agents in an environment trying to reach a goal. The agent(s) learn(s) by attempting to maximize a reward. The learner often has no prior knowledge of the environment and does not know which actions to take when. The act of maximizing the reward is the learning process. \footnote{Original source from Max Robinson's project proposal}
+
+Hierarchical reinforcement learning (HRL) attempts to add prior knowledge to the agent in the form of specifying a task hierarchy. This task hierarchy corresponds to constraints set on the possible policies or actions that can be taken given the status of the environment. A simple example is specifying that a car must stop before the car door can be opened. To humans, this makes intuitive sense, but an agent with no prior knowledge would have to discover this for itself. 
+
+Learning can also take place with multiple agents. For a learning problem involving multiple agents each of which are acting in the environment, the learning process can become long and difficult. 
+
+Marthi's dissertation ``Concurrent Hierarchical Reinforcement Learning" (2006) \cite{Marthi:2006}, describes a system Concurrent ALisp in which mutlieffector learning problems can be learned while using a specified task hierarchy to aid in the learning process. In addition, an implementation of CALisp is described. Finally, Marthi derives learning algorithms that will learn a hierarchically optimal policy for the mutliagent learning process at hand.
 
 \section{Related Work}
 \label{Related Work}
@@ -38,6 +45,8 @@ More recently there has been continued work in HRL. Modifications of layered hie
 
 In addition, the concepts of temporal decomposition or abstraction have been investigated even recently in combination with deep learning \cite{Kulkarni:2016}. The goal is to incorporate a hierarchical structure into the neural network that allows for lower-level learning tasks to take differing amounts of time, while a higher level policy is learned over internal goals. 
 
+Multi-agent systems provide an additional problem to be tackled with HRL. The MASH algorithm \cite{mehta:2005}, done around the same time as Marthi's work, aims to share value functions across multiple agents. MASH is a generalization of the MAXQ architecture, and extends it to multi-agent systems by selectively sharing subtask value functions.
+
 The most similar work to Marthi's is one written by Makar et al. (2001) \cite{Makar:2001} and is actually referenced by Marthi. Makar investigated extending the MAXQ algorithm to each agent in the multi-agent system. Each agent in the system has a MAXQ decomposition of the MDP and aims to learn how to act for each task, which order to do the tasks, and how to coordinate with other agents. Coordination of agents is only done at the highest level of the decomposition. This was the critique by Marthi, because there are situations where agents must interact at a low level. An example would be coordinated navigation to avoid collisions. 
 
 
@@ -46,9 +55,9 @@ The most similar work to Marthi's is one written by Makar et al. (2001) \cite{Ma
 Marthi touches on a myriad of topics as he discusses the research conducted in his thesis. Starting with background on ``Flat" reinforcement learning, Marthi explains the foundations of the Semi-Markov Decision Process (SMDP), and partial programs upon which the research is built.
 %and multieffector MDPs 
 
-The first major contribution of the dissertation, the Concurrent ALisp language, is then explained. A description of the implementation follows. How learning algorithms are applied in Concurrent ALips then follows. These learning algorithms use the early foundations to describe how the learning using Concurrent ALisp is executed.
+The first major contribution of the dissertation, the Concurrent ALisp language, is then explained. A description of the implementation follows as his second major contribution. How learning algorithms are applied in Concurrent ALips is then derived, explained, and implemented. These learning algorithms use the early foundations to describe how learning using Concurrent ALisp is executed.
 
-The experimental results then backup the principles of learning using Concurrent ALisp. The primary themes of partial programs, reward decomposition, and scalability are all tested.
+The experimental results then backup the principles of learning using Concurrent ALisp. The ideas of partial programs, reward decomposition, and scalability are all tested.
 
 \subsection{Background}
 \label{Background}
@@ -81,7 +90,7 @@ Partial programs when combined with an underlying MDP create an SMDP, called the
 
 By creating an SMDP from the partial program, algorithms for SMDPs can be applied to the induced SMDP. Marthi concludes that finding the hierarchically optimal policy corresponding to the partial program is equivalent to finding the optimal stationary policy for the induced SMDP. This means that by looking at the SMDP, a hierarchically optimal execution of the partial program can be found. Since the partial program corresponds to constraints on policies for the MDP, finding a hierarchically optimal execution for the partial program means that a hierarchically optimal policy has been found for the MDP. 
 
-Partial programs also allow for decomposition of the Q-function for learning algorithms. The Q-function can be thought of as the "action-value function". The Q-function is the expected reward if we start at $\textbf{s}$, a history of states, and do action $a$, then follow $\pi$. For partial programs, the Q-function can be decomposed into three components, $Q_r$, $Q_c$, $Q_e$. These are the expected reward received while doing the current choice, after the current choice until the subroutine ends, and after the current subroutine respectively.  
+Partial programs also allow for decomposition of the Q-function for learning algorithms. The Q-function can be thought of as the ``action-value function". The Q-function is the expected reward if we start at $\textbf{s}$, a history of states, and do action $a$, then follow $\pi$. For partial programs, the Q-function can be decomposed into three components, $Q_r$, $Q_c$, $Q_e$. These are the expected reward received while doing the current choice, after the current choice until the subroutine ends, and after the current subroutine respectively.  
 
 The motivation behind decomposing the Q-function is to simplify the learning process. Each part of the decomposition may only rely on a particular subset of variables that are part of the state. In these cases, state abstraction can be leveraged, and thus reduce the sample complexity of learning, since each value is learned independently. 
 
@@ -191,7 +200,7 @@ This then allows a learning algorithm to focus even more narrowly on learning ju
 
 
 \subsubsection{SARSA Implementation}
-Marthi provides and implements two SARSA variants, one with threadwise decomposition and the other with temporal decomposition. Threadwise decomposition of SARSA is proved to converge to the optimal global Q-function, based on work done by Russell and Zimdars \cite{Russell:2003}, and Singh et al. \cite{Singh}. Russell showed threadwise updates are equivalent to standard SARSA updates. Singh wrote the SARSA convergence theorem. 
+Marthi provides and implements two SARSA variants, one with threadwise decomposition and the other with temporal decomposition. Threadwise decomposition of SARSA is proved to converge to the optimal global Q-function, based on work done by Russell and Zimdars (2003) \cite{Russell:2003}, and Singh et al. \cite{Singh:2000}. Russell showed threadwise updates are equivalent to standard SARSA updates. Singh wrote the SARSA convergence theorem. 
 
 A conjecture is made that the temporally decomposed SARSA will converge the a optimal global Q-function. However no proof is provided. Even for ALisp, though, the temporal decomposition of SARSA has not been proved to converge. 
 
@@ -251,9 +260,6 @@ While the actual implementation might not be used any more, the formalization of
 Temporal decomposition was another contribution of learning algorithms by Marthi. This decomposition has many of the same benefits as threadwise decomposition. It too lays a foundation for future work to look at possible temporal decomposition of Q-functions. The actual implementation of temporal decomposition showed that it was possible to do so and get equally or better results than threadwise decomposition. This contribution suffers from the derivation of the decomposition being tied closely to CALisp though. As a result, the decomposition is slightly less significant because it does not generalize as well.
 
 Through these contributions Marthi managed to meet each of his goals in the thesis. CALisp is a well defined language built from the ground up for easily dealing with multieffector MDPs. Partial programs written in CALisp where shown to allow a programmable way of incorporating prior knowledge into learning. The partial programs provide an, albeit subjectively, easier method for using prior knowledge in conjunction with the learning algorithm than prior methods. Finally, Marthi was able to show experimentally that by adding prior knowledge in a partial program the amount of time needed to learn can be decreased. 
-
-\section{Relevant Algorithms}
-\label{relevant Algors}
 
 \section{Applications of Concurrent Hierarchical RL}
 \label{Applications}
