@@ -33,7 +33,7 @@ Hierarchical reinforcement learning (HRL) attempts to add prior knowledge to the
 
 Learning can also take place with multiple agents. For a learning problem involving multiple agents each of which are acting in the environment, the learning process can become long and difficult. 
 
-Marthi's dissertation ``Concurrent Hierarchical Reinforcement Learning" (2006) \cite{Marthi:2006}, describes a system Concurrent ALisp in which mutlieffector learning problems can be learned while using a specified task hierarchy to aid in the learning process. In addition, an implementation of CALisp is described. Finally, Marthi derives learning algorithms that will learn a hierarchically optimal policy for the mutliagent learning process at hand.
+Marthi's dissertation ``Concurrent Hierarchical Reinforcement Learning" (2006), describes a system Concurrent ALisp in which mutlieffector learning problems can be learned while using a specified task hierarchy to aid in the learning process. In addition, an implementation of CALisp is described. Finally, Marthi derives learning algorithms that will learn a hierarchically optimal policy for the mutliagent learning process at hand.
 
 \section{Related Work}
 \label{Related Work}
@@ -43,11 +43,11 @@ A seminal work in HRL to date is the MAXQ algorithm \cite{Dietterich:2000}. MAXQ
 
 More recently there has been continued work in HRL. Modifications of layered hierarchical learning in overlapping layered learning \cite{MacAlpine:2018}, which is also based on task decompositions, aims to provide learning between coordinated tasks. This is not dissimilar to coordination between agents that is discussed in Marthi's thesis. 
 
-In addition, the concepts of temporal decomposition or abstraction have been investigated even recently in combination with deep learning \cite{Kulkarni:2016}. The goal is to incorporate a hierarchical structure into the neural network that allows for lower-level learning tasks to take differing amounts of time, while a higher level policy is learned over internal goals. 
+In addition, the concepts of temporal decomposition or abstraction have been investigated even recently in combination with deep learning (Kulkarni et al. 2016). The goal is to incorporate a hierarchical structure into the neural network that allows for lower-level learning tasks to take differing amounts of time, while a higher level policy is learned over internal goals. 
 
 Multi-agent systems provide an additional problem to be tackled with HRL. The MASH algorithm \cite{mehta:2005}, done around the same time as Marthi's work, aims to share value functions across multiple agents. MASH is a generalization of the MAXQ architecture, and extends it to multi-agent systems by selectively sharing subtask value functions.
 
-The most similar work to Marthi's is one written by Makar et al. (2001) \cite{Makar:2001} and is actually referenced by Marthi. Makar investigated extending the MAXQ algorithm to each agent in the multi-agent system. Each agent in the system has a MAXQ decomposition of the MDP and aims to learn how to act for each task, which order to do the tasks, and how to coordinate with other agents. Coordination of agents is only done at the highest level of the decomposition. This was the critique by Marthi, because there are situations where agents must interact at a low level. An example would be coordinated navigation to avoid collisions. 
+The most similar work to Marthi's is one written by Makar et al. (2001) and is actually referenced by Marthi. Makar investigated extending the MAXQ algorithm to each agent in the multi-agent system. Each agent in the system has a MAXQ decomposition of the MDP and aims to learn how to act for each task, which order to do the tasks, and how to coordinate with other agents. Coordination of agents is only done at the highest level of the decomposition. This was the critique by Marthi, because there are situations where agents must interact at a low level. An example would be coordinated navigation to avoid collisions. 
 
 
 \section{Summary}
