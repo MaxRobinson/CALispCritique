@@ -22,7 +22,6 @@
 \maketitle
 
 %\begin{abstract}
-%In Drole \cite{Drole2017}
 %\end{abstract}
 
 \section{Introduction}
@@ -31,6 +30,16 @@
 
 \section{Related Work}
 \label{Related Work}
+Hierarchical reinforcement learning (HRL) aims to take advantage of a hierarchical structure of behavior that can be used to improve learning. Early methods included the idea of hierarchical abstract machines (HAM) \cite {Parr:1998}. HAMs build created the idea of partial programs and builds up the idea of constricting the policy search space through the provided knowledge. In addition, HAMs developed the idea of a hierarchically optimal policy. Marthi's thesis builds upon these concepts heavily. 
+
+A seminal work in HRL to date is the MAXQ algorithm \cite{Dietterich:2000}. MAXQ learning is based on the idea of decomposing the overall MDP into smaller MDPs per task and decomposing the value of the highest level MDP into an additive composition of the smaller MDPs. MAXQ also proved a sort of optimality that is possible known as recursive optimality. Different from hierarchically optimal, recursively optimal policies have the benefit the learning task being completely separate from the rest of the learning tasks. 
+
+More recently there has been continued work in HRL. Modifications of layered hierarchical learning in overlapping layered learning \cite{MacAlpine:2018}, which is also based on task decompositions, aims to provide learning between coordinated tasks. This is not dissimilar to coordination between agents that is discussed in Marthi's thesis. 
+
+In addition, the concepts of temporal decomposition or abstraction have been investigated even recently in combination with deep learning \cite{Kulkarni:2016}. The goal is to incorporate a hierarchical structure into the neural network that allows for lower-level learning tasks to take differing amounts of time, while a higher level policy is learned over internal goals. 
+
+The most similar work to Marthi's is one written by Makar et al. (2001) \cite{Makar:2001} and is actually referenced by Marthi. Makar investigated extending the MAXQ algorithm to each agent in the multi-agent system. Each agent in the system has a MAXQ decomposition of the MDP and aims to learn how to act for each task, which order to do the tasks, and how to coordinate with other agents. Coordination of agents is only done at the highest level of the decomposition. This was the critique by Marthi, because there are situations where agents must interact at a low level. An example would be coordinated navigation to avoid collisions. 
+
 
 \section{Summary}
 \label{Summary}
