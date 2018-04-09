@@ -148,7 +148,9 @@ The modifications of these algorithms for SMDPs are important because, as discus
 The SMDP Q-learning algorithm could thus be used in CALisp to learn the optimal stationary policy on the SMDP. As a reminder, the optimal stationary policy of the SMDP is equivalent to the hierarchically optimal completion of the partial program. This then corresponds to a hierarchically optimal solution for the MDP. As a result, a hierarchically optimal solution can be found to the MDP by finding the optimal stationary policy of the induced SMDP. 
 
 \subsubsection{Decomposed Learning}
-While applying a standard SMDP algorithm to CALisp works, Marthi points out that there is a better way. For the SMDP Q-learning, rewards are not decomposed in any way which means that should there be a positive and negative reward from different subroutines, all subroutines are penalized according to the combined rewards. In addition, the decomposition of the Q-function that is available as part of a partial program in ALisp is lost in CALisp because subroutines now run in separate threads.
+While applying a standard SMDP algorithm to CALisp works, Marthi points out that there is a better way and develops more optimal methods as his third major contribution.
+
+For the SMDP Q-learning, rewards are not decomposed in any way which means that should there be a positive and negative reward from different subroutines, all subroutines are penalized according to the combined rewards. In addition, the decomposition of the Q-function that is available as part of a partial program in ALisp is lost in CALisp because subroutines now run in separate threads.
 
 However, these problems are solved if a programmer can provide a way of decomposing the reward signal into per-thread rewards. This allows specific threads, and thus subroutines, to be associated with particular rewards. This then allows a threadwise decomposition of the Q-function across subroutine boundaries, like in ALisp. 
 
@@ -225,6 +227,21 @@ Reasoning as to this linear growth is based in the time it takes to get updates 
 
 \section{Contributions}
 \label{Contribs}
+In this thesis, Marthi claims to provide three major contributions in his thesis: The specification of CALisp, an implementation of CALisp, and developing particular learning methods for CALisp that perform well. In addition, Marthi had three major goals in his thesis. These were to build a system that deals with multieffector problems easily, to create a way to incorporate prior knowledge into learning, and to show that in adding prior knowledge the time it takes to learn can be decreased. Marthi did a good job backing up his claims in this thesis. 
+
+The specification for CALisp along with the foundations of why it works were well explained. Concurrent ALisp is backed by ALisp which grants it the niceties that were shown to come from ALisp. These included the mapping of ALisp to an induced SMDP. This mapping allows the same argument to be applied to CALisp, but it takes into account multieffectors and develops the benefits of threadwise architecture. 
+
+The CALisp implementation is simultaneously a great contribution from Marthi, and not a very big one. The CALisp implementation is an important contribution to making sure the rest of the thesis holds because it is a concrete reference of CALisp that works and drives the experiments that are done. The implementation is done also done in an intelligent manner. The focus on the object oriented paradigm for CALisp allows users to build their own constructs in the language. 
+
+The ability to allow users to extend objects to allow for behavior changes in their objects is what a language needs in order to be useful to any one other than the developer of the language. However, the implementation seems to not have garnered much interest in the field. The use of the implementation has not been seen outside of the same research group from which ALisp and CALisp was developed since publication. The concepts, however, have been used even as recently as 2017 in fields like Robo soccer \cite{CHRLKeepaway:2017}
+
+Particular learning methods for CALisp were perhaps Marthi's largest contribution. Marthi showed that a standard Q-learning algorithm, applied to the induced SMDP of the CALisp partial program, could learn a hierarchically optimal solution to a mutlieffector problem with little to no extra work by the programmer. Better than that though was the threadwise decomposition of the the learning problem gained by using the CALisp structure. The threadwise decomposition was then experimentally shown to converge to an optimal policy faster than undecomposed learning. 
+
+While the actual implementation might not be used any more, the formalization of how the threadwise decomposition worked lays the foundation for threadwise decomposition in general. While the development of the threadwise decomposition was with respect to CALisp, the concept is much more general. Marthi showed that for CALisp specifically, threadwise decomposition is both possible and has large positive impacts on learning time, shown experimentally.  
+
+Temporal decomposition was another contribution of learning algorithms by Marthi. This decomposition has many of the same benefits as threadwise decomposition. It too lays a foundation for future work to look at possible temporal decomposition of Q-functions. The actual implementation of temporal decomposition showed that it was possible to do so and get equally or better results than threadwise decomposition. This contribution suffers from the derivation of the decomposition being tied closely to CALisp though. As a result, the decomposition is slightly less significant because it does not generalize as well.
+
+Through these contributions Marthi managed to meet each of his goals in the thesis. CALisp is a well defined language built from the ground up for easily dealing with multieffector MDPs. Partial programs written in CALisp where shown to allow a programmable way of incorporating prior knowledge into learning. The partial programs provide an, albeit subjectively, easier method for using prior knowledge in conjunction with the learning algorithm than prior methods. Finally, Marthi was able to show experimentally that by adding prior knowledge in a partial program the amount of time needed to learn can be decreased. 
 
 \section{Relevant Algorithms}
 \label{relevant Algors}
@@ -232,8 +249,28 @@ Reasoning as to this linear growth is based in the time it takes to get updates 
 \section{Applications of Concurrent Hierarchical RL}
 \label{Applications}
 
+Concurrent hierarchical reinforcement learning (CHRL) has many applicable areas to which the research from Marthi's thesis could be applied. Marthi decided to apply CHRL and CALisp specifically to the real-time strategy domain through Stratagus. Real-time strategy games are designed around the principle of having a large overarching strategy and specific low level strategies like resource collection. In general, real-time strategy games break strategy down into levels strategy known as \textit{micro} and \textit{macro} strategy. Often times, multiple micro-strategies are being carried out simultaneously. This distinct separation of strategy levels and concurrency is a perfect application for CHRL and CALisp. 
+
+Throughout the thesis, the problem of resource gathering was explored. This is a fairly simplistic task where units collect resources to achieve some goal. Though mentioned in passing by the author, this is a very simply, and not very hierarchical example of CHRL. A better application of CHRL would be to apply CALisp to the more general problem of Stratagus, where there are multiple different units, each unit has a different goal, and each goal needs to be carried out in parallel. For example, a peasant needs to gather resources so that warriors can be built so that the enemy can be defeated. Goals would have to be set at different levels in the partial program, and concurrency would have to be used to execute all of the tasks needed. 
+
+%alpha go if time
+
+A more concrete application of CHRL through CALisp would be in robotics. Marthi mentions a case in control theory of using hierarchical control architectures \cite{Todorov:2005}. This could be a step towards full robotic motion. In the case mentioned, only the hierarchy of control is focused on. Allowing for CHRL though, would enable the robot to essentially multi-task, but keep a single goal as the target. An example might be a robot that aims to balance two objects in two different arms. The overall goal is to not let anything drop. This would then require the arms to work concurrently to execute the individual task of balancing. 
+
+Command and control of multiple robots is a natural extension. Given a set of robots, a CALisp program could execute a goal of cleaning a room using updates from each independent cleaning robot in the environment. The goal for each robot might be different, but coordination between the robots would be needed to optimally clean.  
+
+
+
+The use of partial programs in aiding prior knowledge incorporation would also be hugely beneficial in all of these cases. Currently prior knowledge, as described by Marthi, is typically infused into problems via reward shaping, or state approximation. Task decomposition is done by other algorithms as well such as MAXQ, but the syntax for doing so tend to be much less programmer friendly, which was a goal for Marthi. Partial programs also allow the code for the actual execution of a task to either be written right in CALisp, or communicate with other programs or systems in an intuitive manner. 
+
 \section{Conclusion}
 \label{conclusion}
+Marthi's thesis, ``Concurrent Hierarchical Reinforcement Learning" contributes three major developments to the field. The specification of the CALisp programming language provides a construct in which to create partial programs that can be used for incorporating prior knowledge into the learning process for a mutlieffector MDP in an easy manner. An implementation of CALisp is provided as a reference implementation of CALisp and to experimentally demonstrate the power of CALisp. Multiple learning algorithms are derived and implemented in CALisp to showcase the benefits of CALisp. 
+
+Experimentally, Marthi showed that prior knowledge infused into the partial program provides benefits in the rate of convergence to an optimal policy for learning algorithms. In addition, the learning algorithms derived based the structure of CALisp were shown to provide additional benefits in convergence rates. 
+
+Between the experimental results and thorough development of the key contributions in the thesis, Marthi provides a compelling argument for the use of concurrency in hierarchical reinforcement learning, and for the use of a construct such as CALisp. 
+
 
 \vskip 0.2in
 \bibliography{CALispCritique}
